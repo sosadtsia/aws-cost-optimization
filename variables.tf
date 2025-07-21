@@ -37,3 +37,28 @@ variable "schedule_expression" {
   type        = string
   default     = "cron(0 9 ? * MON *)" # Run every Monday at 9:00 AM UTC
 }
+
+# Test resources configuration
+variable "create_test_resources" {
+  description = "Whether to create test detached EBS volumes"
+  type        = bool
+  default     = false
+}
+
+variable "test_volume_count" {
+  description = "Number of test detached EBS volumes to create"
+  type        = number
+  default     = 3
+}
+
+variable "test_volume_size" {
+  description = "Size in GB of each test detached EBS volume"
+  type        = number
+  default     = 5
+}
+
+variable "test_retention_days" {
+  description = "Number of days to keep test volumes before recommending deletion"
+  type        = number
+  default     = 14
+}

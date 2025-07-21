@@ -78,6 +78,42 @@ tasks:
       - echo "Don't forget to verify your SES email address"
     silent: false
 
+  create-test-volumes:
+    desc: Create test EBS volumes for testing the Lambda function
+    deps: [init]
+    cmds:
+      - echo "Creating test EBS volumes..."
+      - cp terraform.tfvars terraform.tfvars.backup || true
+      - sed -i '' 's/create_test_resources = false/create_test_resources = true/g' terraform.tfvars || sed -i 's/create_test_resources = false/create_test_resources = true/g' terraform.tfvars
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} apply -auto-approve -var-file=terraform.tfvars
+      - echo "Test volumes created successfully!"
+    silent: false
+
+  destroy-test-volumes:
+    desc: Destroy test EBS volumes
+    deps: [init]
+    cmds:
+      - echo "Destroying test EBS volumes..."
+      - cp terraform.tfvars.backup terraform.tfvars || true
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} destroy -auto-approve -var-file=terraform.tfvars -target=aws_ebs_volume.test_detached_volumes
+      - echo "Test volumes destroyed successfully!"
+    silent: false
+
+  test-lambda:
+    desc: Run Lambda function locally with test data
+    cmds:
+      - echo "Running Lambda function locally..."
+      - |
+        cd lambda && python -c "
+        import detached_ebs_monitor
+        import json
+        class MockContext:
+            def __init__(self):
+                self.invoked_function_arn = 'arn:aws:lambda:us-east-1:123456789012:function:test'
+        print(json.dumps(detached_ebs_monitor.lambda_handler({}, MockContext())))
+        "
+    silent: false
+
   all:
     desc: Run the full deployment pipeline
     deps: [setup]
@@ -89,4 +125,5 @@ tasks:
       - task: plan
       - echo "Run 'task apply' to deploy resources"
       - echo "After deployment, run 'task verify-ses' to verify your SES email"
+      - echo "To create test volumes, run 'task create-test-volumes'"
     silent: false

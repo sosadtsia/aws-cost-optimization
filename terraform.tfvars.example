@@ -5,3 +5,9 @@ sender_email     = "your-verified-email@example.com"
 recipient_emails = ["admin@example.com", "finance@example.com"]
 days_threshold   = 7
 schedule_expression = "cron(0 9 ? * MON *)" # Run every Monday at 9:00 AM UTC
+
+# Test resources configuration
+create_test_resources = false  # Set to true to create test volumes
+test_volume_count     = 3      # Number of test volumes to create
+test_volume_size      = 5      # Size in GB
+test_retention_days   = 14     # Days to keep before suggesting deletion

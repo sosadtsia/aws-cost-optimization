@@ -81,6 +81,12 @@ The project includes a Taskfile.yml with the following commands:
 - `task verify-ses`: Instructions for verifying SES email
 - `task all`: Run the full deployment pipeline
 
+### Testing Commands
+
+- `task test-lambda`: Run the Lambda function locally with test data
+- `task create-test-volumes`: Create test detached EBS volumes for real-world testing
+- `task destroy-test-volumes`: Remove the test volumes when done testing
+
 ## Customization
 
 ### Adjusting the Detection Threshold
@@ -90,6 +96,22 @@ To change how many days a volume must be detached before alerting, modify the `d
 ### Changing the Schedule
 
 Modify the `schedule_expression` variable in `terraform.tfvars` to change when the function runs. Uses standard CloudWatch Events cron syntax.
+
+### Testing with Real Volumes
+
+To test with real detached EBS volumes:
+
+1. Update `terraform.tfvars` with your preferred test settings:
+   ```
+   create_test_resources = true  # Enable test volume creation
+   test_volume_count     = 3     # Number of volumes to create
+   test_volume_size      = 5     # Size in GB
+   test_retention_days   = 14    # Days to keep before suggesting deletion
+   ```
+
+2. Run `task create-test-volumes` to create detached volumes
+3. Invoke the Lambda function to test detection
+4. Run `task destroy-test-volumes` to clean up when done
 
 ## Cost Impact
 
