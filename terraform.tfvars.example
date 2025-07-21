@@ -1,0 +1,7 @@
+aws_region       = "us-east-2"
+environment      = "develop"
+project_name     = "detached-ebs-monitor"
+sender_email     = "your-verified-email@example.com"
+recipient_emails = ["admin@example.com", "finance@example.com"]
+days_threshold   = 7
+schedule_expression = "cron(0 9 ? * MON *)" # Run every Monday at 9:00 AM UTC
