@@ -1,4 +1,4 @@
-aws_region       = "us-east-1"
+aws_region       = "us-east-2"
 environment      = "develop"
 project_name     = "aws-cost-optimization"
 sender_email     = "your-verified-email@example.com"
@@ -15,4 +15,4 @@ test_retention_days   = 14     # Days to keep before suggesting deletion
 # Cost Explorer configuration
 report_period_days   = 30      # Number of days to include in the cost report
 budget_threshold     = 10      # Budget threshold for alerts (0 to disable)
-cost_report_schedule = "cron(0 8 1 * ? *)"  # Run at 8:00 AM UTC on the 1st day of each month
+cost_report_schedule = "cron(0 8 ? * * *)"  # Run daily at 8:00 AM UTC
