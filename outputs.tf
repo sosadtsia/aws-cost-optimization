@@ -18,8 +18,15 @@ output "test_volume_ids" {
   value       = aws_ebs_volume.test_detached_volumes[*].id
 }
 
+
 # Output deletion time for test volumes
 output "test_volumes_delete_after" {
   description = "Date after which test volumes can be safely deleted"
   value       = var.create_test_resources ? formatdate("YYYY-MM-DD", timeadd(timestamp(), "${var.test_retention_days * 24}h")) : "No test volumes created"
+}
+
+# Output the Lambda function ARN
+output "cost_explorer_function_arn" {
+  description = "The ARN of the Cost Explorer Lambda function"
+  value       = aws_lambda_function.cost_explorer.arn
 }
