@@ -46,11 +46,12 @@ tasks:
     silent: false
 
   package:
-    desc: Package Lambda function
+    desc: Package Lambda functions
     cmds:
-      - echo "Packaging Lambda function..."
-      - rm -f lambda/detached_ebs_monitor.zip
-      - zip -r lambda/detached_ebs_monitor.zip lambda/detached_ebs_monitor.py
+      - echo "Packaging Lambda functions..."
+      - rm -f lambda/*.zip
+      - zip -j lambda/detached_ebs_monitor.zip lambda/detached_ebs_monitor.py
+      - zip -j lambda/cost_explorer_dashboard.zip lambda/cost_explorer_dashboard.py
     silent: false
 
   test-python:
@@ -64,9 +65,11 @@ tasks:
     desc: Instructions for verifying SES email
     cmds:
       - echo "To verify your SES email:"
-      - echo "1. Check your inbox for an email from AWS"
-      - echo "2. Click the verification link in the email"
-      - echo "3. Alternatively, verify in the AWS SES console"
+      - echo "Importent sender_email and recipient_email have to be diferent emails and needs to pass SES validation"
+      - echo "1. aws ses verify-email-identity --email-address sender_email@gmail.com --region us-east-2"
+      - echo "2. aws ses verify-email-identity --email-address recipient_email@gmail.com --region us-east-2"
+      - echo "3. Check your inbox for an email from AWS"
+      - echo "4. Click the verification link in the email"
     silent: false
 
   setup:
@@ -99,10 +102,10 @@ tasks:
       - echo "Test volumes destroyed successfully!"
     silent: false
 
-  test-lambda:
-    desc: Run Lambda function locally with test data
+  test-ebs-lambda:
+    desc: Run EBS monitoring Lambda function locally with test data
     cmds:
-      - echo "Running Lambda function locally..."
+      - echo "Running EBS monitoring Lambda function locally..."
       - |
         cd lambda && python -c "
         import detached_ebs_monitor
@@ -111,6 +114,21 @@ tasks:
             def __init__(self):
                 self.invoked_function_arn = 'arn:aws:lambda:us-east-1:123456789012:function:test'
         print(json.dumps(detached_ebs_monitor.lambda_handler({}, MockContext())))
+        "
+    silent: false
+
+  test-cost-lambda:
+    desc: Run Cost Explorer Lambda function locally with test data
+    cmds:
+      - echo "Running Cost Explorer Lambda function locally..."
+      - |
+        cd lambda && python -c "
+        import cost_explorer_dashboard
+        import json
+        class MockContext:
+            def __init__(self):
+                self.invoked_function_arn = 'arn:aws:lambda:us-east-1:123456789012:function:test'
+        print(json.dumps(cost_explorer_dashboard.lambda_handler({}, MockContext())))
         "
     silent: false
 

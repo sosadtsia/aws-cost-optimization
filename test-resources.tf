@@ -7,6 +7,11 @@ locals {
   create_test_resources = var.create_test_resources ? 1 : 0
 }
 
+# Get available AZs in the current region
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 # Create detached EBS volumes for testing
 resource "aws_ebs_volume" "test_detached_volumes" {
   count             = local.create_test_resources * var.test_volume_count
@@ -19,16 +24,11 @@ resource "aws_ebs_volume" "test_detached_volumes" {
     environment = var.environment
     project     = var.project_name
     createdBy   = "OpenTofu"
-    Purpose     = "Testing EBS volume detection"
+    purpose     = "Testing EBS volume detection"
     DeleteAfter = formatdate("YYYY-MM-DD", timeadd(timestamp(), "${var.test_retention_days * 24}h"))
   }
 
   lifecycle {
     create_before_destroy = true
   }
-}
-
-# Get available AZs in the current region
-data "aws_availability_zones" "available" {
-  state = "available"
 }
