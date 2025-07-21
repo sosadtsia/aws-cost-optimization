@@ -1,13 +1,13 @@
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-east-2"
+  default     = "us-east-1"
 }
 
 variable "environment" {
   description = "Deployment environment (dev, staging, prod)"
   type        = string
-  default     = "dev"
+  default     = "develop"
 }
 
 variable "project_name" {
@@ -60,5 +60,24 @@ variable "test_volume_size" {
 variable "test_retention_days" {
   description = "Number of days to keep test volumes before recommending deletion"
   type        = number
-  default     = 14
+  default     = 7
+}
+
+# Cost Explorer variables
+variable "report_period_days" {
+  description = "Number of days to include in the cost report"
+  type        = number
+  default     = 30
+}
+
+variable "budget_threshold" {
+  description = "Budget threshold for alerts (0 to disable)"
+  type        = number
+  default     = 0
+}
+
+variable "cost_report_schedule" {
+  description = "CloudWatch Events schedule expression for the cost report"
+  type        = string
+  default     = "cron(0 8 ? * * *)" # Run daily at 8:00 AM UTC
 }

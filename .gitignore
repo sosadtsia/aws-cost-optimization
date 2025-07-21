@@ -17,7 +17,6 @@ crash.*.log
 terraform.tfvars
 *.tfvars.json
 !terraform.tfvars.example
-!terraform.tfvars
 
 # Ignore CLI configuration files
 .terraformrc

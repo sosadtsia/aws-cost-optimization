@@ -11,7 +11,6 @@ output "ses_verification_guidance" {
   value       = "Remember to verify your sender email ${var.sender_email} through the AWS SES console"
 }
 
-
 # Output the IDs of the created test volumes
 output "test_volume_ids" {
   description = "IDs of the test detached EBS volumes"
