@@ -1,0 +1,92 @@
+version: '3'
+
+vars:
+  TERRAFORM_BIN: tofu
+  AWS_PROFILE: '{{.AWS_PROFILE | default "default"}}'
+  AWS_REGION: '{{.AWS_REGION | default "us-east-2"}}'
+
+tasks:
+  init:
+    desc: Initialize Terraform/OpenTofu
+    cmds:
+      - echo "Initializing Terraform/OpenTofu..."
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} init
+    silent: false
+
+  validate:
+    desc: Validate Terraform/OpenTofu configuration
+    deps: [init]
+    cmds:
+      - echo "Validating Terraform/OpenTofu configuration..."
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} validate
+    silent: false
+
+  plan:
+    desc: Create Terraform/OpenTofu plan
+    deps: [validate]
+    cmds:
+      - echo "Creating Terraform/OpenTofu plan..."
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} plan -var-file=terraform.tfvars
+    silent: false
+
+  apply:
+    desc: Apply Terraform/OpenTofu changes
+    deps: [validate]
+    cmds:
+      - echo "Applying Terraform/OpenTofu changes..."
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} apply -auto-approve -var-file=terraform.tfvars
+    silent: false
+
+  destroy:
+    desc: Destroy Terraform/OpenTofu resources
+    deps: [init]
+    cmds:
+      - echo "Destroying Terraform/OpenTofu resources..."
+      - export AWS_PROFILE={{.AWS_PROFILE}} && {{.TERRAFORM_BIN}} destroy -auto-approve -var-file=terraform.tfvars
+    silent: false
+
+  package:
+    desc: Package Lambda function
+    cmds:
+      - echo "Packaging Lambda function..."
+      - rm -f lambda/detached_ebs_monitor.zip
+      - zip -r lambda/detached_ebs_monitor.zip lambda/detached_ebs_monitor.py
+    silent: false
+
+  test-python:
+    desc: Lint Python code
+    cmds:
+      - echo "Linting Python code..."
+      - python -m flake8 detached_ebs_monitor.py || echo "Linting failed but continuing..."
+    silent: false
+
+  verify-ses:
+    desc: Instructions for verifying SES email
+    cmds:
+      - echo "To verify your SES email:"
+      - echo "1. Check your inbox for an email from AWS"
+      - echo "2. Click the verification link in the email"
+      - echo "3. Alternatively, verify in the AWS SES console"
+    silent: false
+
+  setup:
+    desc: Setup the project for first use
+    cmds:
+      - echo "Setting up project..."
+      - cp -n terraform.tfvars.example terraform.tfvars || true
+      - echo "Please update terraform.tfvars with your configuration"
+      - echo "Don't forget to verify your SES email address"
+    silent: false
+
+  all:
+    desc: Run the full deployment pipeline
+    deps: [setup]
+    cmds:
+      - task: test-python
+      - task: package
+      - task: init
+      - task: validate
+      - task: plan
+      - echo "Run 'task apply' to deploy resources"
+      - echo "After deployment, run 'task verify-ses' to verify your SES email"
+    silent: false
