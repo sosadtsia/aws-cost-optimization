@@ -1,6 +1,11 @@
 aws_region       = "us-east-2"
 environment      = "develop"
 project_name     = "detached-ebs-monitor"
+# Importent sender_email and recipient_email have to be diferent and needs to pass SES validation
+# aws ses verify-email-identity --email-address email1@gmail.com --regi
+on us-east-2
+# aws ses verify-email-identity --email-address email2@gmail.com --regi
+on us-east-2
 sender_email     = "your-verified-email@example.com"
 recipient_emails = ["admin@example.com", "finance@example.com"]
 days_threshold   = 7
@@ -11,3 +16,8 @@ create_test_resources = false  # Set to true to create test volumes
 test_volume_count     = 3      # Number of test volumes to create
 test_volume_size      = 5      # Size in GB
 test_retention_days   = 14     # Days to keep before suggesting deletion
+
+# Cost Explorer configuration
+report_period_days   = 30      # Number of days to include in the cost report
+budget_threshold     = 100     # Budget threshold for alerts (0 to disable)
+cost_report_schedule = "cron(0 8 1 * ? *)"  # Run at 8:00 AM UTC on the 1st day of each month

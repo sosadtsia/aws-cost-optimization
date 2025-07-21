@@ -62,3 +62,22 @@ variable "test_retention_days" {
   type        = number
   default     = 14
 }
+
+# Cost Explorer variables
+variable "report_period_days" {
+  description = "Number of days to include in the cost report"
+  type        = number
+  default     = 30
+}
+
+variable "budget_threshold" {
+  description = "Budget threshold for alerts (0 to disable)"
+  type        = number
+  default     = 0
+}
+
+variable "cost_report_schedule" {
+  description = "CloudWatch Events schedule expression for the cost report"
+  type        = string
+  default     = "cron(0 8 1 * ? *)" # Run at 8:00 AM UTC on the 1st day of each month
+}
